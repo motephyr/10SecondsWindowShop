@@ -1,6 +1,7 @@
 "use strict";
 const Persona = use("Persona");
 const Config = use("Config");
+const User = use('App/Models/User')
 
 const { validate } = use("Validator");
 
@@ -90,6 +91,41 @@ class AuthController {
 
     return response.redirect(loginRoute)
   }
+
+
+  async facebookLogin({ ally }) {
+    await ally.driver('facebook').redirect()
+  }
+
+  async facebookCallback({ ally, auth }) {
+    try {
+      const fbUser = await ally.driver('facebook').getUser()
+
+      // user details to be saved
+      const userDetails = {
+        email: fbUser.getEmail(),
+        token: fbUser.getAccessToken(),
+        login_source: 'facebook'
+      }
+
+      // search for existing user
+      const whereClause = {
+        email: fbUser.getEmail()
+      }
+
+      const user = await User.findOrCreate(whereClause, userDetails)
+      try {
+        await auth.check()
+      } catch (error) {
+        await auth.login(user)
+      }
+
+      return 'Logged in'
+    } catch (error) {
+      return 'Unable to authenticate. Try again later'
+    }
+  }
+
 }
 
 module.exports = AuthController;

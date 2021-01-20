@@ -33,3 +33,6 @@ Route.get(loginRoute, "AuthController.getLogin");
 Route.get(passwordResetRoute, "AuthController.getResetPassword");
 Route.get(logoutRoute, "AuthController.getLogout");
 Route.get(registrationSuccessRoute, "AuthController.getAuthDashboard");
+
+Route.get('facebook/login', 'AuthController.facebookLogin')
+Route.get('facebook/callback', 'AuthController.facebookCallback')
