@@ -97,7 +97,7 @@ class AuthController {
     await ally.driver('facebook').redirect()
   }
 
-  async facebookCallback({ ally, auth }) {
+  async facebookCallback({ ally, auth,response }) {
     try {
       const fbUser = await ally.driver('facebook').getUser()
 
@@ -120,8 +120,10 @@ class AuthController {
         await auth.login(user)
       }
 
-      return 'Logged in'
+      return response.redirect('/')
+      // return 'Logged in'
     } catch (error) {
+      console.log(error)
       return 'Unable to authenticate. Try again later'
     }
   }
