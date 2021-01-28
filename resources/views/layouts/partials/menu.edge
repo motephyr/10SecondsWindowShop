@@ -1,46 +1,74 @@
-  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-    <div class="container">
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <a class="navbar-brand" href="/">10SecondsWindowShop</a>
+<nav
+  class="navbar navbar-expand-lg navbar-light bg-{{auth.user && auth.user.role === 'seller' ? 'primary' : 'light'}} fixed-top">
+  <div class="container">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/">10SecondsWindowShop</a>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          @if(auth.user)
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false">
-              {{ auth.user.username }}, you are a customer.
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/users/buyer">Go to my store</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/logout">Logout</a>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/users/records">My Record</a>
-          </li>
-          @else
-          <li>
-            <a href="{{ Config.get('adonis-auth-scaffold.registrationRoute') }}" class="btn btn-link">
-              Sign up
-            </a>
-          </li>
-          <li>
-            <a href="{{ Config.get('adonis-auth-scaffold.loginRoute') }}" class="btn btn-link">
-              Sign in
-            </a>
-          </li>
-          <li>
-            <a href="/facebook/login" class="btn btn-link">
-              Facebook Login
-            </a>
-          </li>
-          @endif
-        </ul>
-      </div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        @if(auth.user)
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            {{ auth.user.username }},
+            you are a {{auth.user.role === 'buyer' ? 'customer' : 'boss'}}.
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            @if(auth.user.role === 'buyer')
+            <form action="/users/update" method="POST">
+              {{ csrfField() }}
+              <input class="form-control" type="hidden" name="role" value="seller" />
+
+              <a class="dropdown-item" onclick="this.parentNode.submit(); return false;"> Go to my store</a>
+
+            </form>
+
+            @elseif(auth.user.role === 'seller')
+
+            <form action="/users/update" method="POST">
+              {{ csrfField() }}
+              <input class="form-control" type="hidden" name="role" value="buyer" />
+
+              <a class="dropdown-item" onclick="this.parentNode.submit(); return false;">I want to buy something.</a>
+
+            </form>
+            @endif
+
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">Logout</a>
+          </div>
+        </li>
+
+        @if(auth.user.role === 'buyer')
+        <li class="nav-item">
+          <a class="nav-link" href="/users/records">My Record</a>
+        </li>
+
+        @elseif(auth.user.role === 'seller')
+
+
+        @endif
+        @else
+        <li>
+          <a href="{{ Config.get('adonis-auth-scaffold.registrationRoute') }}" class="btn btn-link">
+            Sign up
+          </a>
+        </li>
+        <li>
+          <a href="{{ Config.get('adonis-auth-scaffold.loginRoute') }}" class="btn btn-link">
+            Sign in
+          </a>
+        </li>
+        <li>
+          <a href="/facebook/login" class="btn btn-link">
+            Facebook Login
+          </a>
+        </li>
+        @endif
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>

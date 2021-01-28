@@ -21,3 +21,5 @@ const Route = use('Route')
 
 Route.on('/').render('page/index')
 Route.on('/demo').render('page/demo')
+
+Route.post('/users/update', "UserController.update");
