@@ -6,7 +6,8 @@ package-lock.json
 tmp
 
 # Environment variables, never commit this file
-.env
+.env*
+nginx*
 
 # The development sqlite file
 database/*.sqlite
