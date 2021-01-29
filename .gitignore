@@ -16,4 +16,4 @@ database/*.sqlite
 .history
 .idea
 
-ecosystem_production.config.js
+ecosystem.config.js
