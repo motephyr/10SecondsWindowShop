@@ -90,7 +90,7 @@ class AuthController {
     const loginRoute = Config.get("adonis-auth-scaffold.loginRoute");
     session.clear();
 
-    return response.redirect(loginRoute)
+    return response.redirect('/')
   }
 
 
