@@ -72,7 +72,7 @@ module.exports = {
   | Specifies the URL for the app.
   |
   */
-  appURL: "http://localhost:3333",
+  appURL: Env.get('APP_URL', ''),
 
   /*
   |--------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 const Persona = use("Persona");
 const Config = use("Config");
 const User = use('App/Models/User')
+const crypto = require("crypto");
 
 const { validate } = use("Validator");
 
@@ -104,7 +105,8 @@ class AuthController {
       // user details to be saved
       const userDetails = {
         email: fbUser.getEmail(),
-        token: fbUser.getAccessToken(),
+        username: fbUser.getName(),
+        password: crypto.randomBytes(20).toString('hex'),
         login_source: 'facebook'
       }
 
