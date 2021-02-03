@@ -22,7 +22,9 @@ const providers = [
   "@adonisjs/validator/providers/ValidatorProvider",
   "@adonisjs/mail/providers/MailProvider",
   "@adonisjs/persona/providers/PersonaProvider",
-  "@adonisjs/ally/providers/AllyProvider"
+  "@adonisjs/ally/providers/AllyProvider",
+  '@adonisjs/drive/providers/DriveProvider'
+
 ]
 
 /*
