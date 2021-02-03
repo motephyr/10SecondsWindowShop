@@ -1,0 +1,11 @@
+<ul>
+  @each(item in items.rows)
+  <li>Title: {{ item.title }} </li>
+  <li>Price: {{ item.price }} </li>
+  <li>
+    <video width="320" height="240" controls autoplay muted>
+      <source src="{{ item.video_path }}" type="video/mp4">
+    </video>
+  </li>
+  @endeach
+</ul>
