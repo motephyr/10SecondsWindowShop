@@ -28,3 +28,10 @@ Route.post('/users/update', "UserController.update");
 Route.get('/items', 'ItemController.index')
 Route.get('/items/add', "ItemController.add");
 Route.post('/items', "ItemController.store");
+
+
+Route.group(() => {
+  // 更新token
+  Route.post('/items', "v1/ItemController.store");
+
+}).prefix('/v1')
