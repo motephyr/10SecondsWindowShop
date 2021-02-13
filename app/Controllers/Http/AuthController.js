@@ -3,6 +3,7 @@ const Persona = use("Persona");
 const Config = use("Config");
 const User = use('App/Models/User')
 const crypto = require("crypto");
+const axios = require("axios");
 
 const { validate } = use("Validator");
 
@@ -98,7 +99,7 @@ class AuthController {
     await ally.driver('facebook').redirect()
   }
 
-  async facebookCallback({ ally, auth,response }) {
+  async facebookCallback({ ally, auth, response }) {
     try {
       const fbUser = await ally.driver('facebook').getUser()
 
@@ -123,6 +124,37 @@ class AuthController {
       }
 
       return response.redirect('/')
+      // return 'Logged in'
+    } catch (error) {
+      console.log(error)
+      return 'Unable to authenticate. Try again later'
+    }
+  }
+
+  async facebookToken({ request, response, auth }) {
+    const payload = request.only(["userId", "token"]);
+    try {
+      const url = `https://graph.facebook.com/${payload.userId}?fields=id,name,picture.width(720),birthday,email&access_token=${payload.token}`;
+      const request = await axios.get(url);
+
+      const userDetails = {
+        email: request.data.email,
+        username: request.data.name,
+        password: crypto.randomBytes(20).toString('hex'),
+        login_source: 'facebook'
+      }
+
+      // search for existing user
+      const whereClause = {
+        email: request.data.email
+      }
+
+      const user = await User.findOrCreate(whereClause, userDetails)
+      const jwt = await auth.authenticator('api').generate(user)
+      const result = {
+        user: {id: user.id, username: user.username, email: user.email, access_token: jwt.token },
+      }
+      return response.send(result)
       // return 'Logged in'
     } catch (error) {
       console.log(error)

@@ -32,6 +32,7 @@
     "@adonisjs/shield": "^1.0.8",
     "@adonisjs/validator": "^5.0.6",
     "aws-sdk": "^2.835.0",
+    "axios": "^0.21.1",
     "pg": "^8.5.1"
   },
   "devDependencies": {

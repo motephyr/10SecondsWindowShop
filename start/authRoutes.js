@@ -36,3 +36,4 @@ Route.get(registrationSuccessRoute, "AuthController.getAuthDashboard");
 
 Route.get('facebook/login', 'AuthController.facebookLogin')
 Route.get('facebook/callback', 'AuthController.facebookCallback')
+Route.post('facebook/token', 'AuthController.facebookToken')
