@@ -32,6 +32,7 @@ Route.post('/items', "ItemController.store");
 
 Route.group(() => {
   // 更新token
+  Route.get('/items', 'v1/ItemController.index').middleware(['auth'])
   Route.post('/items', "v1/ItemController.store");
 
 }).prefix('/v1')

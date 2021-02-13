@@ -150,7 +150,7 @@ class AuthController {
       }
 
       const user = await User.findOrCreate(whereClause, userDetails)
-      const jwt = await auth.authenticator('api').generate(user)
+      const jwt = await auth.authenticator('jwt').generate(user)
       const result = {
         user: {id: user.id, username: user.username, email: user.email, access_token: jwt.token },
       }

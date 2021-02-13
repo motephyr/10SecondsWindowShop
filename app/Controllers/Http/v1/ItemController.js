@@ -6,6 +6,10 @@ const { validate } = use("Validator");
 const User = use('App/Models/User')
 
 class ItemController {
+  async index({response}) {
+    const items = await Item.all()
+    return response.send({ items: items });
+  }
   async store({ request, response }) {
 
     let title = ''
