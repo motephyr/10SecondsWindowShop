@@ -35,6 +35,7 @@ class ExceptionHandler extends BaseExceptionHandler {
    * @return {void}
    */
   async report (error, { request }) {
+    Logger.error(request.all());
     Logger.error(error)
   }
 }
