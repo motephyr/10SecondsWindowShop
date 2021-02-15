@@ -39,5 +39,6 @@ Route.group(() => {
   Route.post('/users/update', "v1/UserController.update");
   Route.get('/items/myitems', 'v1/ItemController.myitems')
   Route.post('/items', "v1/ItemController.store");
-
+  Route.patch('/items/:id', "v1/ItemController.update");
+  Route.delete('/items/:id', "v1/ItemController.destroy");
 }).prefix('/v1').middleware(['auth:jwt'])

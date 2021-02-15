@@ -7,8 +7,8 @@ const User = use('App/Models/User')
 
 class ItemController {
   async index({ response }) {
-    const items = await Item.all()
-    return response.send({ items: items });
+    const items = await Item.query().where({status: 'publish'}).fetch()
+    return response.send({ items: items.rows });
   }
   async myitems({ response, auth }) {
     auth = auth.authenticator('jwt')
@@ -68,6 +68,34 @@ class ItemController {
 
 
     return response.send({ result: 'ok' });
+  }
+
+  async update({ request, params, response, auth }) {
+    auth = auth.authenticator('jwt')
+    const user = auth.user
+    let { status } = request.all()
+    let item = (await Item.query().where({ id: params.id, user_id: user.id }).fetch()).first()
+    item.merge({ status })
+    if (status === 'draft') {
+      item.merge({ last_drafted_at: new Date() })
+    } else if (status === 'publish') {
+      item.merge({ last_publish_at: new Date() })
+    } else if (status === 'sold_out') {
+      item.merge({ last_sold_out_at: new Date() })
+    }
+    await item.save()
+
+    return response.send({ item });
+  }
+
+  async destroy({ request, params, response, auth }) {
+    auth = auth.authenticator('jwt')
+    const user = auth.user
+    let { status } = request.all()
+    let item = (await Item.query().where({ id: params.id, user_id: user.id }).fetch()).first()
+    await item.delete()
+
+    return response.send({ item });
   }
 }
 
