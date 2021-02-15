@@ -31,14 +31,13 @@ Route.post('/items', "ItemController.store");
 
 
 Route.group(() => {
-  // 更新token
   Route.get('/items', 'v1/ItemController.index')
 
 }).prefix('/v1')
 
 Route.group(() => {
-  // 更新token
-  Route.post('/items', "v1/ItemController.store");
   Route.post('/users/update', "v1/UserController.update");
+  Route.get('/items/myitems', 'v1/ItemController.myitems')
+  Route.post('/items', "v1/ItemController.store");
 
 }).prefix('/v1').middleware(['auth:jwt'])

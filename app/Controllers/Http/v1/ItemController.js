@@ -6,25 +6,28 @@ const { validate } = use("Validator");
 const User = use('App/Models/User')
 
 class ItemController {
-  async index({response}) {
+  async index({ response }) {
     const items = await Item.all()
     return response.send({ items: items });
   }
-  async store({ request, response }) {
-
+  async myitems({ response, auth }) {
+    auth = auth.authenticator('jwt')
+    const user = auth.user
+    const items = await user.items().fetch()
+    return response.send({ items: items });
+  }
+  async store({ request, response, auth }) {
+    auth = auth.authenticator('jwt')
+    const user = auth.user
     let title = ''
     let price = 0
     let url = ''
-    let email = ''
-    let userid = ''
 
     request.multipart.field(async (name, value) => {
       if (name === 'title') {
         title = value
       } else if (name === 'price') {
         price = value
-      } else if (name === 'email') {
-        email = value
       }
     });
     request.multipart.file('video_file', {
@@ -44,10 +47,8 @@ class ItemController {
         throw new Error(error.message)
       }
 
-      const user = await User.findBy({ email: email })
-      userid = user.id
       // upload file to s3
-      url = await Drive.put(`user/${userid}/item/${filename}`, file.stream, {
+      url = await Drive.put(`user/${user.id}/item/${filename}`, file.stream, {
         ContentType: file.headers['content-type'],
         ACL: 'public-read'
       })
@@ -59,14 +60,14 @@ class ItemController {
     }
     const validation = await validate({ title, price }, rules)
     if (validation.fails()) {
-      return response.send('fail')
+      return response.send({ result: 'fail' });
     }
     console.log(url)
-    const item = await Item.create({ user_id: userid, title, price, video_path: url, status: 'draft', last_drafted_at: new Date() })
+    const item = await Item.create({ user_id: user.id, title, price, video_path: url, status: 'draft', last_drafted_at: new Date() })
     await item.save()
 
 
-    return response.send('ok');
+    return response.send({ result: 'ok' });
   }
 }
 
