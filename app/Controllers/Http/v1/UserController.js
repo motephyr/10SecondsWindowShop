@@ -4,7 +4,7 @@ const Persona = use("Persona");
 class UserController {
   async update({ request, auth, response }) {
     auth = auth.authenticator('jwt')
-    const payload = request.only(['role'])
+    const payload = request.only(['role', 'information'])
     const user = auth.user
     await Persona.updateProfile(user, payload)
     return response.send({user})
