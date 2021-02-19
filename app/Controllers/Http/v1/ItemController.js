@@ -7,8 +7,26 @@ const User = use('App/Models/User')
 
 class ItemController {
   async index({ response }) {
-    const items = await Item.query().where({status: 'publish'}).fetch()
+    const items = await Item.query().where({ status: 'publish' }).fetch()
     return response.send({ items: items.rows });
+  }
+
+  async show({ params, request, response }) {
+    const { next, prev } = request.all()
+    let item
+    if (next) {
+      item = await Item.query().where('id', '>', params.id).andWhere({status: 'publish'}).orderBy('id').limit(1).fetch()
+      item = item.rows[0]
+    } else if (prev) {
+      item = await Item.query().where('id', '<', params.id).andWhere({status: 'publish'}).orderBy('id', 'desc').limit(1).fetch()
+      item = item.rows[0]
+    }
+    if (!item) {
+      item = await Item.find(params.id)
+    }
+
+
+    return response.send({ item });
   }
   async myitems({ response, auth }) {
     auth = auth.authenticator('jwt')

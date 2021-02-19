@@ -29,12 +29,6 @@ Route.get('/items', 'ItemController.index')
 Route.get('/items/add', "ItemController.add");
 Route.post('/items', "ItemController.store");
 
-
-Route.group(() => {
-  Route.get('/items', 'v1/ItemController.index')
-
-}).prefix('/v1')
-
 Route.group(() => {
   Route.post('/users/update', "v1/UserController.update");
   Route.get('/items/myitems', 'v1/ItemController.myitems')
@@ -42,3 +36,9 @@ Route.group(() => {
   Route.patch('/items/:id', "v1/ItemController.update");
   Route.delete('/items/:id', "v1/ItemController.destroy");
 }).prefix('/v1').middleware(['auth:jwt'])
+
+Route.group(() => {
+  Route.get('/items', 'v1/ItemController.index')
+  Route.get('/items/:id', 'v1/ItemController.show')
+}).prefix('/v1')
+
