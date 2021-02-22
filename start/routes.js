@@ -35,6 +35,7 @@ Route.group(() => {
   Route.post('/items', "v1/ItemController.store");
   Route.patch('/items/:id', "v1/ItemController.update");
   Route.delete('/items/:id', "v1/ItemController.destroy");
+  Route.post('/items/:id/checkUserInformation', "v1/ItemController.checkUserInformation");
 }).prefix('/v1').middleware(['auth:jwt'])
 
 Route.group(() => {

@@ -3,11 +3,11 @@
 const Item = use('App/Models/Item')
 const Drive = use('Drive')
 const { validate } = use("Validator");
-const User = use('App/Models/User')
+const Record = use('App/Models/Record')
 
 class ItemController {
   async index({ response }) {
-    const items = await Item.query().where({ status: 'publish' }).fetch()
+    const items = await Item.query().where({ status: 'publish' }).orderBy('id').fetch()
     return response.send({ items: items.rows });
   }
 
@@ -35,7 +35,7 @@ class ItemController {
   async myitems({ response, auth }) {
     auth = auth.authenticator('jwt')
     const user = auth.user
-    const items = await user.items().fetch()
+    const items = await user.items().orderBy('id').fetch()
     return response.send({ items: items });
   }
   async store({ request, response, auth }) {
@@ -113,12 +113,29 @@ class ItemController {
   async destroy({ request, params, response, auth }) {
     auth = auth.authenticator('jwt')
     const user = auth.user
-    let { status } = request.all()
     let item = (await Item.query().where({ id: params.id, user_id: user.id }).fetch()).first()
     await item.delete()
 
     return response.send({ item });
   }
+
+  async checkUserInformation({ params, response, auth }) {
+    auth = auth.authenticator('jwt')
+    const user = auth.user
+    let item = (await Item.query().with('user')
+      .where({ id: params.id, status: 'publish' }).fetch()).first()
+    let seller = await item.getRelated('user')
+    let attr = { item_id: item.id, seller_user_id: item.user_id, buyer_user_id: user.id }
+
+    const record = await Record.findOrCreate(attr, attr)
+    await item.load('records');
+    let records = await item.records().count();
+
+    item.merge({ record_count: records[0].count })
+    await item.save()
+    return response.send({ record, seller: seller });
+  }
+
 }
 
 module.exports = ItemController

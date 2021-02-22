@@ -7,6 +7,10 @@ class Item extends Model {
   user() {
     return this.belongsTo('App/Models/User')
   }
+
+  records(){
+    return this.hasMany('App/Models/Record')
+  }
 }
 
 module.exports = Item
