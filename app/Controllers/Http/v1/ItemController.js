@@ -12,21 +12,25 @@ class ItemController {
   }
 
   async show({ params, request, response }) {
-    const { next, prev } = request.all()
-    let item
+    const { next, prev, period } = request.all()
+    let item, afteritem
+
+    item = await Item.find(params.id)
+    item.merge({ view_count: item.view_count + 1, total_watch_time: item.total_watch_time + parseInt(period) })
+    await item.save()
     if (next) {
-      item = await Item.query().where('id', '>', params.id).andWhere({status: 'publish'}).orderBy('id').limit(1).fetch()
-      item = item.rows[0]
+      afteritem = await Item.query().where('id', '>', params.id).andWhere({ status: 'publish' }).orderBy('id').limit(1).fetch()
+
+      afteritem = afteritem.rows[0]
     } else if (prev) {
-      item = await Item.query().where('id', '<', params.id).andWhere({status: 'publish'}).orderBy('id', 'desc').limit(1).fetch()
-      item = item.rows[0]
-    }
-    if (!item) {
-      item = await Item.find(params.id)
+      afteritem = await Item.query().where('id', '<', params.id).andWhere({ status: 'publish' }).orderBy('id', 'desc').limit(1).fetch()
+      afteritem = afteritem.rows[0]
     }
 
-
-    return response.send({ item });
+    if (!afteritem) {
+      afteritem = item
+    }
+    return response.send({ item: afteritem });
   }
   async myitems({ response, auth }) {
     auth = auth.authenticator('jwt')
