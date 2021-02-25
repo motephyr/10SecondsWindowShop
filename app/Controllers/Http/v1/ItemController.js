@@ -114,8 +114,9 @@ class ItemController {
     auth = auth.authenticator('jwt')
     const user = auth.user
     let item = (await Item.query().where({ id: params.id, user_id: user.id }).fetch()).first()
-    await item.delete()
-
+    // await item.delete()
+    item.merge({status: 'deleted', last_deleted_at: new Date() })
+    await item.save()
     return response.send({ item });
   }
 
