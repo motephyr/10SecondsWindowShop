@@ -43,6 +43,11 @@ class User extends Model {
     return this.hasMany('App/Models/Item')
   }
 
+  buyerItems () {
+    return this.belongsToMany('App/Models/Item', 'buyer_user_id', 'item_id', 'id', 'id').pivotTable('records')
+
+  }
+
   buyerRecords () {
     return this.hasMany('App/Models/Record', 'id', 'buyer_user_id')
   }

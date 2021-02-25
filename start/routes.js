@@ -39,7 +39,7 @@ Route.group(() => {
 }).prefix('/v1').middleware(['auth:jwt'])
 
 Route.group(() => {
-  Route.get('/items', 'v1/ItemController.index')
+  Route.get('/items', 'v1/ItemController.index').middleware(['auth:jwt'])
   Route.get('/items/:id', 'v1/ItemController.show')
 }).prefix('/v1')
 

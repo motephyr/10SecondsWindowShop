@@ -6,8 +6,14 @@ const { validate } = use("Validator");
 const Record = use('App/Models/Record')
 
 class ItemController {
-  async index({ response }) {
-    const items = await Item.query().where({ status: 'publish' }).orderBy('id').fetch()
+  async index({ response, auth }) {
+    auth = auth.authenticator('jwt')
+    let items
+    if(auth.user){
+      items = await auth.user.buyerItems().orderBy('id').fetch()
+    }else{
+      items = await Item.query().where({ status: 'publish' }).orderBy('id').fetch()
+    }
     return response.send({ items: items.rows });
   }
 
