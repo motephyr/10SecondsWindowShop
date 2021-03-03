@@ -59,8 +59,8 @@ class ItemController {
       }
     });
     request.multipart.file('video_file', {
-      types: ["jpg", "jpeg", "png", "gif"],
-      size: "2mb"
+      types: ["jpg", "jpeg", "png", "gif", "mov", "mp4"],
+      size: "20mb"
     }, async file => {
       const filename = `${new Date().getTime()}_${file.clientName}`
       // set file size from stream byteCount, so adonis can validate file size
