@@ -31,8 +31,9 @@
     "@adonisjs/session": "^1.0.27",
     "@adonisjs/shield": "^1.0.8",
     "@adonisjs/validator": "^5.0.6",
-    "aws-sdk": "^2.835.0",
+    "aws-sdk": "^2.857.0",
     "axios": "^0.21.1",
+    "fluent-ffmpeg": "^2.1.2",
     "pg": "^8.5.1"
   },
   "devDependencies": {
