@@ -53,13 +53,12 @@ class ItemController {
     const { title, price } = request.all()
     const file = request.file('video_file')
 
-
     await new Promise((resolve) => {
       const outputVideoPath = "tmp/uploads/clip.mp4";
       const outputImagePath = "tmp/uploads/clip.png";
       const fileName = Date.now()
 
-      new ffmpeg(file.tmpPath)
+      ffmpeg(file.tmpPath)
         .screenshots({
           timestamps: [0.0],
           filename: 'clip.png',
@@ -70,8 +69,8 @@ class ItemController {
             ContentType: 'image/png',
             ACL: 'public-read'
           })
-
-          new ffmpeg(file.tmpPath)
+          console.log(imageUrl);
+          ffmpeg(file.tmpPath)
             .output(outputVideoPath)
             .outputOptions(['-movflags isml+frag_keyframe'])
             .toFormat('mp4')
