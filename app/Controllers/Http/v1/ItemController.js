@@ -7,7 +7,7 @@ const fs = require('fs')
 const ffmpeg = require('fluent-ffmpeg');
 
 class ItemController {
-  async index({request, response, auth }) {
+  async index({ request, response, auth }) {
     auth = auth.authenticator('jwt')
     const { kind } = request.all()
     let items
@@ -43,7 +43,7 @@ class ItemController {
   async myitems({ response, auth }) {
     auth = auth.authenticator('jwt')
     const user = auth.user
-    const items = await user.items().orderBy('id').fetch()
+    const items = await user.items().where('status', '!=', 'deleted').orderBy('id').fetch()
     return response.send({ items: items });
   }
   async store({ request, response, auth }) {
@@ -55,35 +55,55 @@ class ItemController {
 
 
     await new Promise((resolve) => {
-      const outputPath = "tmp/uploads/clip.mp4";
-      const fileName = `${Date.now()}.${file.subtype}`
+      const outputVideoPath = "tmp/uploads/clip.mp4";
+      const outputImagePath = "tmp/uploads/clip.png";
+      const fileName = Date.now()
 
       new ffmpeg(file.tmpPath)
-        .output(outputPath)
-        .outputOptions(['-movflags isml+frag_keyframe'])
-        .toFormat('mp4')
-        .withAudioCodec('copy')
-        .on('error', function (err, stdout, stderr) {
-          console.log('an error happened: ' + err.message);
-          console.log('ffmpeg stdout: ' + stdout);
-          console.log('ffmpeg stderr: ' + stderr);
-        })
-        .on('end', async () => {
-          let stream = await fs.createReadStream(outputPath)
-          const url = await Drive.put(`user/${user.id}/item/${fileName}`, stream, {
-            ContentType: file.headers['content-type'],
+        .screenshots({
+          timestamps: [0.0],
+          filename: 'clip.png',
+          folder: 'tmp/uploads'
+        }).on('end', async () => {
+          let stream = await fs.createReadStream(outputImagePath)
+          const imageUrl = await Drive.put(`user/${user.id}/item/${fileName}.png`, stream, {
+            ContentType: 'image/png',
             ACL: 'public-read'
           })
-          console.log(url)
-          const item = await Item.create({ user_id: user.id, title, price, video_path: url, status: 'draft', last_drafted_at: new Date() })
-          await item.save()
 
-          resolve()
+          new ffmpeg(file.tmpPath)
+            .output(outputVideoPath)
+            .outputOptions(['-movflags isml+frag_keyframe'])
+            .toFormat('mp4')
+            .withAudioCodec('copy')
+            .on('error', function (err, stdout, stderr) {
+              console.log('an error happened: ' + err.message);
+              console.log('ffmpeg stdout: ' + stdout);
+              console.log('ffmpeg stderr: ' + stderr);
+            })
+            .on('end', async () => {
+              let stream = await fs.createReadStream(outputVideoPath)
+              const videoUrl = await Drive.put(`user/${user.id}/item/${fileName}.mp4`, stream, {
+                ContentType: file.headers['content-type'],
+                ACL: 'public-read'
+              })
+              console.log(videoUrl)
+              const item = await Item.create({ user_id: user.id, title, price, video_path: videoUrl, image_path: imageUrl, status: 'draft', last_drafted_at: new Date() })
+              await item.save()
 
-        })
-        .on('progress', function (progress) {
-          console.log('Processing: ' + progress.percent + '% done');
-        }).run()
+              await Drive.disk('local').delete(outputVideoPath)
+              await Drive.disk('local').delete(outputImagePath)
+
+              resolve()
+
+            })
+            .on('progress', function (progress) {
+              console.log('Processing: ' + progress.percent + '% done');
+            }).run()
+
+        });
+
+
 
     }).catch(err => { console.log(err) });
 
