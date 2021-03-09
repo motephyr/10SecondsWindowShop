@@ -84,7 +84,7 @@ class ItemController {
             .on('end', async () => {
               let stream = await fs.createReadStream(outputVideoPath)
               const videoUrl = await Drive.put(`user/${user.id}/item/${fileName}.mp4`, stream, {
-                ContentType: file.headers['content-type'],
+                ContentType: 'video/mp4',
                 ACL: 'public-read'
               })
               console.log(videoUrl)
